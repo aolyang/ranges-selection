@@ -39,32 +39,34 @@ if (import.meta.vitest) {
 
     const { describe, it, expect } = import.meta.vitest
 
-    describe("test `merge` functions", () => {
-        const flatEmptySpecs: FlatSpec[] = [
+    describe("`merge` functions", () => {
+        let message: string
+        let specs: FlatSpec[]
+
+        message = "should handle empty specs, merge $exists with $ranges, get $expected"
+        specs = [
             { exists: [], ranges: [], expected: [] },
             { exists: [1, 3], ranges: [], expected: [1, 3] },
             { exists: [], ranges: [1, 3], expected: [1, 3] }
         ]
 
-        it.each(flatEmptySpecs)
-        ("should handle empty specs, merge $exits with $ranges", ({
-            exists, ranges, expected
-        }) => {
+        it.each(specs)(message, ({ exists, ranges, expected }) => {
             expect(merge(exists, ranges)).toEqual(expected)
         })
     })
 
-    describe("test `mergeArrays` functions", () => {
-        const tupleEmptySpecs: TupleSpec[] = [
+    describe("`mergeArrays` functions", () => {
+        let message: string
+        let specs: TupleSpec[]
+
+        message = "should handle empty specs, merge $exists with $ranges, get $expected"
+        specs = [
             { exists: [], ranges: [], expected: [] },
             { exists: [[1, 3]], ranges: [], expected: [[1, 3]] },
             { exists: [], ranges: [[1, 3]], expected: [[1, 3]] }
         ]
 
-        it.each(tupleEmptySpecs)
-        ("should handle empty specs, merge $exits with $ranges", ({
-            exists, ranges, expected
-        }) => {
+        it.each(specs)(message, ({ exists, ranges, expected }) => {
             expect(mergeArrays(exists, ranges)).toEqual(expected)
         })
     })

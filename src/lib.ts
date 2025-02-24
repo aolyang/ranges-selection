@@ -53,6 +53,17 @@ if (import.meta.vitest) {
         it.each(specs)(message, ({ exists, ranges, expected }) => {
             expect(merge(exists, ranges)).toEqual(expected)
         })
+
+        message = "should merge ranges, merge $exists with $ranges, get $expected"
+        specs = [
+            { exists: [1, 3], ranges: [5, 7], expected: [1, 3, 5, 7] },
+            { exists: [1, 3], ranges: [4, 7, 9, 10], expected: [1, 7, 9, 10] },
+            { exists: [1, 3, 5, 7, 10, 14], ranges: [3, 5], expected: [1, 7, 10, 14] },
+            { exists: [1, 3, 5, 7, 10, 14], ranges: [3, 5, 7, 10], expected: [1, 14] }
+        ]
+        it.each(specs)(message, ({ exists, ranges, expected }) => {
+            expect(merge(exists, ranges)).toEqual(expected)
+        })
     })
 
     describe("`mergeArrays` functions", () => {
@@ -66,6 +77,16 @@ if (import.meta.vitest) {
             { exists: [], ranges: [[1, 3]], expected: [[1, 3]] }
         ]
 
+        it.each(specs)(message, ({ exists, ranges, expected }) => {
+            expect(mergeArrays(exists, ranges)).toEqual(expected)
+        })
+        message = "should merge ranges, merge $exists with $ranges, get $expected"
+        specs = [
+            { exists: [[1, 3]], ranges: [[5, 7]], expected: [[1, 3], [5, 7]] },
+            { exists: [[1, 3]], ranges: [[4, 7], [9, 10]], expected: [[1, 7], [9, 10]] },
+            { exists: [[1, 3], [5, 7], [10, 14]], ranges: [[3, 5]], expected: [[1, 7], [10, 14]] },
+            { exists: [[1, 3], [5, 7], [10, 14]], ranges: [[3, 5], [7, 10]], expected: [[1, 7], [10, 14]] }
+        ]
         it.each(specs)(message, ({ exists, ranges, expected }) => {
             expect(mergeArrays(exists, ranges)).toEqual(expected)
         })

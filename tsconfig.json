@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "lib": ["ESNext"],
+        "module": "ESNext",
+        "target": "ES6",
+        "moduleResolution": "node",
+        "types": ["vitest/importMeta"]
+    },
+    "include": ["src/*.ts"]
+}

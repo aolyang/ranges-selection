@@ -2,6 +2,7 @@ import type { Range } from "../types"
 
 import { collect } from "./collect"
 import { normalize } from "./normalize"
+import { split } from "./split"
 
 export function select(
     ranges: Range[],
@@ -16,11 +17,26 @@ export function select(
         return normalize([...ranges, ...collect(input)])
     }
 
-    const indices = Object.entries(input)
-        .filter(([_, value]) => value !== undefined && value !== null && value)
+    let result = [...ranges]
+    // do not trust user input
+    const entries: [key: string, value: boolean | undefined | null][] = Object.entries(input)
+        .filter(([_, value]) => value !== undefined && value !== null)
+
+    // Handle false values first (split)
+    const splitIndices = entries
+        .filter(([_, value]) => value === false)
         .map(([key]) => parseInt(key))
 
-    return select(ranges, indices)
+    for (const range of collect(splitIndices)) {
+        result = split(result, range)
+    }
+
+    // Then handle true values (select)
+    const selectIndices = entries
+        .filter(([_, value]) => value === true)
+        .map(([key]) => parseInt(key))
+
+    return normalize([...result, ...collect(selectIndices)])
 }
 
 if (import.meta.vitest) {
@@ -61,5 +77,25 @@ if (import.meta.vitest) {
             expect(select([], [])).toEqual([])
             expect(select([], {})).toEqual([])
         })
+
+        it("should handle boolean values in object", () => {
+            expect(select(baseRanges, {
+                44: true,
+                45: false,
+                46: true
+            })).toEqual([[0, 10], [12, 15], [44, 44], [46, 46]])
+
+            expect(select([[0, 10]], {
+                5: false,
+                7: true
+            })).toEqual([[0, 4], [6, 10]])
+
+            expect(select([[1, 10]], {
+                3: false,
+                4: false,
+                5: false
+            })).toEqual([[1, 2], [6, 10]])
+        })
     })
 }
+

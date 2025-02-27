@@ -1,0 +1,66 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          npm install pnpm --global
+          pnpm i
+
+      - name: Run tests
+        run: |
+          pnpm run test
+
+      - name: Build library
+        run: |
+          pnpm run build
+
+      - name: Archive lib artifacts
+        if: startsWith(github.event.head_commit.message, 'release')
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib-dist
+          path: |
+            !node_modules
+            !.github
+            !*.config.*
+            !pnpm-lock.yaml
+
+  publish:
+    needs: build
+    if: startsWith(github.event.head_commit.message, 'release')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download lib artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lib-dist
+      - name: Set release tag
+        run: |
+          commit_message='${{ github.event.head_commit.message }}'
+          if [[ $commit_message =~ --([a-zA-Z0-9_-]+)$ ]]; then
+            tag=${BASH_REMATCH[1]}
+            echo "npm_release_tag=$tag" >> $GITHUB_ENV
+          fi
+
+      - name: Publish to npm
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          access: 'public'
+          tag: ${{ env.npm_release_tag || 'latest' }}
+

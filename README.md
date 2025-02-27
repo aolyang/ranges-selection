@@ -1,4 +1,4 @@
-# range-selection
+# ranges-selection
 
 handling range selections in large scale data records such as virtual lists/grid tables.
 
@@ -14,18 +14,18 @@ WHERE id BETWEEN 0 AND 10
 ## Installation
 
 ```bash
-npm install range-selection
+npm install ranges-selection
 # or
-yarn add range-selection
+yarn add ranges-selection
 # or
-pnpm add range-selection
+pnpm add ranges-selection
 ```
 
 ## Usage
 
 ### Basic Usage
 ```js
-import { Ranges } from "range-selection"
+import { Ranges } from "ranges-selection"
 
 const ranges = new Ranges([[0, 10], [11, 15]])  // [[0, 15]]
 
@@ -59,6 +59,7 @@ ranges.select(44)  // [[0, 10], [12, 15], [44, 44]]
 
 // Array of numbers
 ranges.select([44, 55, 56, 57])  // [[0, 10], [12, 15], [44, 44], [55, 57]]
+```
 
 ### Select Object
 
@@ -86,7 +87,7 @@ ranges.unselect([2, 6, 7])  // [[0, 1], [3, 5], [8, 10], [12, 13], [15, 15]]
 
 ### Utility Functions
 ```js
-import { normalize, merge, split, select, unselect, include } from 'range-selection/utils'
+import { normalize, merge, split, select, unselect, include } from 'ranges-selection/utils'
 
 const ranges = [[0, 10], [12, 15]]
 

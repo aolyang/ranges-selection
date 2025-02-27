@@ -1,7 +1,10 @@
 {
-    "name": "range-selection",
-    "version": "0.0.1",
+    "name": "ranges-selection",
+    "version": "0.0.2",
     "description": "A range selection helper for infinite virtual List/Grid table",
+    "repository": "github:aolyang/ranges-selection",
+    "author": "aolyang <aolyang@foxmail.com>",
+    "license": "MIT",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -17,9 +20,6 @@
             "types": "./dist/utils.d.ts"
         }
     },
-    "repository": "github:aolyang/range-selection",
-    "author": "aolyang <aolyang@foxmail.com>",
-    "license": "MIT",
     "scripts": {
         "build": "tsup --format esm,cjs && tsup --format esm --dts-only",
         "dev": "pnpm build --watch",

@@ -1,7 +1,22 @@
 {
     "name": "range-selection",
     "version": "0.0.1",
-    "main": "index.js",
+    "description": "A range selection helper for infinite virtual List/Grid table",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs",
+            "types": "./dist/index.d.ts"
+        },
+        "./utils": {
+            "import": "./dist/utils.js",
+            "require": "./dist/utils.cjs",
+            "types": "./dist/utils.d.ts"
+        }
+    },
     "repository": "github:aolyang/range-selection",
     "author": "aolyang <aolyang@foxmail.com>",
     "license": "MIT",

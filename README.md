@@ -1,99 +1,152 @@
 # range-selection
 
-a range selection helper for infinite virtual List/Grid table
+handling range selections in large scale data records such as virtual lists/grid tables.
 
-benefits for SQL query:
+ranges can be used directly in backend data query with good performance
 ```sql
-SELECT * from LargeTabel
-WHERE id 
-    BETWEEN 0 AND 10
-    OR id BETWEEN 12 AND 15
-    OR id BETWEEN 22 AND 25
-    -- ...more
+SELECT * FROM table
+WHERE id BETWEEN 0 AND 10
+   OR id BETWEEN 12 AND 15
+   OR id BETWEEN 22 AND 25
+   -- ...more
 ```
 
-## usage
+## Installation
 
+```bash
+npm install range-selection
+# or
+yarn add range-selection
+# or
+pnpm add range-selection
+```
+
+## Usage
+
+### Basic Usage
 ```js
 import { Ranges } from "range-selection"
 
+const ranges = new Ranges([[0, 10], [11, 15]])  // [[0, 15]]
+
+// Check inclusion
+ranges.include(5)         // true
+ranges.include(16)        // false
+ranges.include([5, 8])    // true
+ranges.include([8, 13])   // true (partial overlap)
+```
+
+### Merge Ranges
+```js
+const ranges = new Ranges([[1, 3], [7, 9]])
+
+ranges.merge([[5, 6]])        // [[1, 3], [5, 9]]
+ranges.merge([[2, 4]])        // [[1, 9]]
+```
+
+### Split Range
+```js
 const ranges = new Ranges([[0, 10], [12, 15]])
-ranges.value() // [[0, 10], [12, 15]]
+ranges.split([9, 13])  // [[0, 8], [10, 10], [12, 12], [14, 15]]
 ```
 
-### **merge** two ranges
+### Select number index or a set of number
 ```js
-const ranges = [[16, 20], [22, 24]]
-ranges.value() // [[0, 10], [12, 15]]
-ranges.merge(ranges) // [[0, 10], [12, 20], [22, 24]]
-```
+const ranges = new Ranges([[0, 10], [12, 15]])
 
-### **split** ranges by provide a unselect index range
+// Single number
+ranges.select(44)  // [[0, 10], [12, 15], [44, 44]]
 
-```js
-const range = [22, 33]
-ranges.value() // [[0, 10], [12, 15]]
-ranges.split([9, 13]) // [[0, 8], [14, 15]]
-```
+// Array of numbers
+ranges.select([44, 55, 56, 57])  // [[0, 10], [12, 15], [44, 44], [55, 57]]
 
-### **select** a single index
-
-convert index to a range
+### Select Object
 
 ```js
-const index = 44
-ranges.value() // [[0, 10], [12, 15]]
-ranges.select(index) // [[0, 10], [12, 15], [44, 44]]
+const ranges = new Ranges([[0, 10], [12, 15]])
+
+// Object with boolean flags
+ranges.select({
+    44: true,   // add 44
+    45: false,  // remove 45
+    46: true    // add 46
+})  // [[0, 10], [12, 15], [44, 44], [46, 46]]
 ```
 
-### **select** an array of index
-
-optimize continuous values
-
+### Unselect Operations
 ```js
-const indexArray = [44, 55,56,57, 66,67,68]
-ranges.value() // [[0, 10], [12, 15]]
-ranges.select(indexArray) // [[0, 10], [12, 15], [44, 44], [55, 57], [66, 68]]
+const ranges = new Ranges([[0, 10], [12, 15]])
+
+// Single number
+ranges.unselect(14)  // [[0, 10], [12, 13], [15, 15]]
+
+// Array of numbers
+ranges.unselect([2, 6, 7])  // [[0, 1], [3, 5], [8, 10], [12, 13], [15, 15]]
 ```
 
-### **select** an object of index
-
+### Utility Functions
 ```js
-const indexObject = {
-    44: true,
-    55: true, 56: true, 57: true,
-    66: true, 67: true, 68: true
-}
-ranges.value() // [[0, 10], [12, 15]]
-ranges.select(indexObject) // [[0, 10], [12, 15], [44, 44], [55, 57], [66, 68]]
+import { normalize, merge, split, select, unselect, include } from 'range-selection/utils'
+
+const ranges = [[0, 10], [12, 15]]
+
+// Normalize ranges
+normalize([[1, 3], [2, 4]])  // [[1, 4]]
+
+// Merge ranges
+merge([[0, 10], [12, 15]], [[16, 20]])  // [[0, 10], [12, 20]]
+
+// Split range
+split([[0, 10], [12, 15]], [9, 13])  // [[0, 8], [14, 15]]
+
+// Include check
+include([[0, 10], [12, 15]], 5)  // true
+include([[0, 10], [12, 15]], [8, 13])  // false, 11 is not included
 ```
 
-### **unselect** a single index
+## API Reference
 
-```js
-const index = 14
-ranges.value() // [[0, 10], [12, 15]]
-ranges.unselect(index) // [[0, 10], [12, 13], [15, 15]]
-```
+### Class Methods
 
-### **unselect** an array of index
+#### `ranges.constructor(ranges?: [number, number][])`
+Creates a new range selection instance with optional initial ranges.
 
-```js
-const indexArray = [2, 6, 7, 15]
-ranges.value() // [[0, 10], [12, 15]]
-ranges.unselect(indexArray) // [[1, 1], [3, 5], [8, 10], [12, 14]]
-```
+#### `ranges.value(): [number, number][]`
+Returns current state of ranges.
 
-### **unselect** an object of index, using exist **select** api
+#### `ranges.include(target: number | [number, number]): boolean`
+Checks if a number or range is included in current ranges.
 
-```js
-const indexObject = {
-    2: false,
-    6: false,
-    7: false,
-    11: true,
-    15: false
-}
-ranges.value() // [[0, 10], [12, 15]]
-ranges.select(indexObject) // [[1, 1], [3, 5], [8, 10], [11, 14]]
-```
+#### `ranges.merge(ranges: [number, number][]): [number, number][]`
+Merges new ranges with existing ranges.
+
+#### `ranges.split(range: [number, number]): [number, number][]`
+Splits ranges by removing specified range.
+
+#### `ranges.select(input: number | number[] | { [key: number]: boolean }): [number, number][]`
+Adds new indices to ranges. When using object input:
+- `true`: adds the number
+- `false`: removes/splits at the number
+
+#### `ranges.unselect(input: number | number[]): [number, number][]`
+Removes indices from ranges.
+
+### Utility Functions
+
+#### `normalize(ranges: [number, number][]): [number, number][]`
+Sorts and merges overlapping or adjacent ranges.
+
+#### `merge(existing: [number, number][], newRanges: [number, number][]): [number, number][]`
+Merges two sets of ranges.
+
+#### `split(ranges: [number, number][], splitRange: [number, number]): [number, number][]`
+Splits ranges at the specified range.
+
+#### `select(ranges: [number, number][], input: number | number[] | { [key: number]: boolean }): [number, number][]`
+Adds new indices to ranges.
+
+#### `unselect(ranges: [number, number][], indices: number | number[]): [number, number][]`
+Removes indices from ranges.
+
+#### `include(ranges: [number, number][], target: number | [number, number]): boolean`
+Checks if a number or range is included in ranges.

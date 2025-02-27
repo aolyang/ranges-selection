@@ -172,7 +172,7 @@ if (import.meta.vitest) {
 
             // Check ranges
             expect(ranges.include([5, 8])).toBe(true)
-            expect(ranges.include([8, 13])).toBe(true)
+            expect(ranges.include([8, 13])).toBe(false) // 11 is not included
             expect(ranges.include([16, 20])).toBe(false)
         })
     })

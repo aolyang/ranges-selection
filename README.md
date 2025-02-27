@@ -87,9 +87,28 @@ ranges.unselect(14)  // [[0, 10], [12, 13], [15, 15]]
 ranges.unselect([2, 6, 7])  // [[0, 1], [3, 5], [8, 10], [12, 13], [15, 15]]
 ```
 
+### Check include
+```js
+const ranges = new Ranges([[0, 10], [12, 15]])
+
+// Check index
+ranges.include(5)       // true
+ranges.include([5, 10]) // true
+ranges.include([5, 11]) // false, 11 is not in range
+
+// Check multiple numbers at once
+ranges.includes([5, 11, 12, 16])  
+// Returns: { 5: true, 11: false, 12: true, 16: false }
+```
+
 ### Utility Functions
 ```js
-import { normalize, merge, split, select, unselect, include } from 'ranges-selection/utils'
+import { 
+    normalize, 
+    merge, split, 
+    select, unselect, 
+    include, includes 
+} from 'ranges-selection/utils'
 
 const ranges = [[0, 10], [12, 15]]
 
@@ -105,6 +124,8 @@ split([[0, 10], [12, 15]], [9, 13])  // [[0, 8], [14, 15]]
 // Include check
 include([[0, 10], [12, 15]], 5)  // true
 include([[0, 10], [12, 15]], [8, 13])  // false, 11 is not included
+// Includes check
+includes([[0, 10]], [8, 9, 11]) // { 8: true, 9: true, 11: false }
 ```
 
 ## API Reference
@@ -134,6 +155,12 @@ Adds new indices to ranges. When using object input:
 #### `ranges.unselect(input: number | number[]): [number, number][]`
 Removes indices from ranges.
 
+#### `ranges.include(target: number | [number, number]): boolean`
+Checks if a number or range is included in current ranges.
+
+#### `ranges.includes(targets: number[]): { [key: number]: boolean }`
+Checks if multiple numbers are included in current ranges.
+
 ### Utility Functions
 
 #### `normalize(ranges: [number, number][]): [number, number][]`
@@ -153,3 +180,6 @@ Removes indices from ranges.
 
 #### `include(ranges: [number, number][], target: number | [number, number]): boolean`
 Checks if a number or range is included in ranges.
+
+### `includes(ranges: [number, number][], targets: number[]): { [key: number]: boolean }`
+Checks if multiple numbers are included in ranges.

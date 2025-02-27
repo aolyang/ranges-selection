@@ -1,6 +1,6 @@
 {
     "name": "ranges-selection",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A range selection helper for infinite virtual List/Grid table",
     "repository": "github:aolyang/ranges-selection",
     "author": "aolyang <aolyang@foxmail.com>",

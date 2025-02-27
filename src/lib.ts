@@ -1,11 +1,6 @@
 import type { IndexObject, Range } from "./types"
 
-import { include } from "./utils/include"
-import { merge } from "./utils/merge"
-import { normalize } from "./utils/normalize"
-import { select } from "./utils/select"
-import { split } from "./utils/split"
-import { unselect } from "./utils/unselect"
+import * as Utils from "./utils"
 
 export class Ranges {
     private ranges: Range[]
@@ -15,7 +10,7 @@ export class Ranges {
      * @param ranges - Array of number tuples representing initial ranges
      */
     constructor(ranges: Range[] = []) {
-        this.ranges = normalize(ranges)
+        this.ranges = Utils.normalize(ranges)
     }
 
     /**
@@ -35,7 +30,7 @@ export class Ranges {
      * ranges.merge([[16, 20], [22, 24]]) // [[0, 10], [12, 20], [22, 24]]
      */
     merge(ranges: Range[]): Range[] {
-        this.ranges = merge(this.ranges, ranges)
+        this.ranges = Utils.merge(this.ranges, ranges)
         return this.value()
     }
 
@@ -48,7 +43,7 @@ export class Ranges {
      * ranges.split([9, 13]) // [[0, 8], [14, 15]]
      */
     split(range: Range): Range[] {
-        this.ranges = split(this.ranges, range)
+        this.ranges = Utils.split(this.ranges, range)
         return this.value()
     }
 
@@ -67,7 +62,7 @@ export class Ranges {
      * ranges.select({ 44: true, 55: true }) // [[0, 10], [12, 15], [44, 44], [55, 55]]
      */
     select(input: number | number[] | IndexObject): Range[] {
-        this.ranges = select(this.ranges, input)
+        this.ranges = Utils.select(this.ranges, input)
         return this.value()
     }
 
@@ -84,8 +79,20 @@ export class Ranges {
      * ranges.unselect([2, 6, 7]) // [[0, 1], [3, 5], [8, 10], [12, 15]]
      */
     unselect(input: number | number[]): Range[] {
-        this.ranges = unselect(this.ranges, input)
+        this.ranges = Utils.unselect(this.ranges, input)
         return this.value()
+    }
+
+    /**
+     * Checks multiple numbers for inclusion in the current ranges
+     * @param numbers - Array of numbers to check for inclusion
+     * @returns Object with numbers as keys and boolean values indicating inclusion
+     * @example
+     * ranges.value() // [[0, 10], [12, 15]]
+     * ranges.includes([5, 11, 12]) // { 5: true, 11: false, 12: true }
+     */
+    includes(numbers: number[]): { [key: number]: boolean } {
+        return Utils.includes(this.ranges, numbers)
     }
 
     /**
@@ -99,7 +106,7 @@ export class Ranges {
      * ranges.include([8, 13]) // true
      */
     include(target: number | Range): boolean {
-        return include(this.ranges, target)
+        return Utils.include(this.ranges, target)
     }
 }
 
@@ -174,6 +181,16 @@ if (import.meta.vitest) {
             expect(ranges.include([5, 8])).toBe(true)
             expect(ranges.include([8, 13])).toBe(false) // 11 is not included
             expect(ranges.include([16, 20])).toBe(false)
+        })
+
+        it("should check multiple numbers inclusion", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.includes([5, 11, 12, 16])).toEqual({
+                5: true,
+                11: false,
+                12: true,
+                16: false
+            })
         })
     })
 }

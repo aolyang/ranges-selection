@@ -1,5 +1,5 @@
 export { collect } from "./utils/collect"
-export { include } from "./utils/include"
+export { include, includes } from "./utils/include"
 export { merge } from "./utils/merge"
 export { normalize } from "./utils/normalize"
 export { select } from "./utils/select"

@@ -2,6 +2,21 @@
 
 handling range selections in large scale data records such as virtual lists/grid tables.
 
+
+## Basic Usage
+```js
+import { Ranges } from "ranges-selection"
+
+const ranges = new Ranges([[0, 10], [11, 15]])  // [[0, 15]]
+
+// Check inclusion
+ranges.include(5)         // true
+ranges.include(16)        // false
+ranges.merge([15, 16])    // [[0, 16]]
+ranges.split(8)           // [[0, 7], [9, 16]]
+```
+
+
 ranges can be used directly in backend data query with good performance
 ```sql
 SELECT * FROM table
@@ -22,19 +37,6 @@ pnpm add ranges-selection
 ```
 
 ## Usage
-
-### Basic Usage
-```js
-import { Ranges } from "ranges-selection"
-
-const ranges = new Ranges([[0, 10], [11, 15]])  // [[0, 15]]
-
-// Check inclusion
-ranges.include(5)         // true
-ranges.include(16)        // false
-ranges.include([5, 8])    // true
-ranges.include([8, 13])   // true (partial overlap)
-```
 
 ### Merge Ranges
 ```js

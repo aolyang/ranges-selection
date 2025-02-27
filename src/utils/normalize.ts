@@ -43,10 +43,13 @@ if (import.meta.vitest) {
 
         it("should merge adjacent ranges", () => {
             expect(normalize([[1, 2], [3, 4]])).toEqual([[1, 4]])
+            expect(normalize([[1, 3], [5, 6]])).toEqual([[1, 3], [5, 6]])
+            expect(normalize([[1, 3], [4, 6], [7, 9]])).toEqual([[1, 9]])
         })
 
-        it("should handle multiple overlapping ranges", () => {
-            expect(normalize([[1, 3], [2, 4], [6, 8], [7, 9]])).toEqual([[1, 4], [6, 9]])
+        it("should handle multiple overlapping and adjacent ranges", () => {
+            expect(normalize([[1, 3], [2, 4], [6, 8], [9, 10]]))
+                .toEqual([[1, 4], [6, 10]])  // 9 is adjacent to 8
         })
     })
 }

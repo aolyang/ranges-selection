@@ -96,50 +96,56 @@ if (import.meta.vitest) {
             const empty = new Ranges()
             expect(empty.value()).toEqual([])
 
+            // [0-10] and [12-15] should not merge as 12 !== 10 + 1
             const initial = new Ranges([[0, 10], [12, 15]])
             expect(initial.value()).toEqual([[0, 10], [12, 15]])
         })
 
         it("should merge ranges", () => {
             const ranges = new Ranges([[0, 10], [12, 15]])
-            expect(ranges.merge([[16, 20], [22, 24]]))
-                .toEqual([[0, 10], [12, 15], [16, 20], [22, 24]])
+            // [15,16] should merge with [16,20]
+            expect(ranges.merge([[15, 16], [16, 20], [22, 24]]))
+                .toEqual([[0, 10], [12, 20], [22, 24]])
         })
 
         it("should split ranges", () => {
-            const ranges = new Ranges([[0, 10], [12, 15]])
+            const ranges = new Ranges([[0, 10], [11, 15]]) // 11 is adjacent to 10
             expect(ranges.split([9, 13]))
                 .toEqual([[0, 8], [14, 15]])
         })
 
         it("should select single index", () => {
             const ranges = new Ranges([[0, 10], [12, 15]])
-            expect(ranges.select(44))
-                .toEqual([[0, 10], [12, 15], [44, 44]])
+            // 11 should merge [0,10] and [12,15] as 11 is adjacent to both
+            expect(ranges.select(11))
+                .toEqual([[0, 15]])
         })
 
         it("should select array of indices", () => {
             const ranges = new Ranges([[0, 10], [12, 15]])
-            expect(ranges.select([44, 55, 56, 57]))
-                .toEqual([[0, 10], [12, 15], [44, 44], [55, 57]])
+            // [55,56,57] should merge as they are adjacent
+            // 44 and 59 should be separate as they're not adjacent to anything
+            expect(ranges.select([44, 55, 56, 57, 59]))
+                .toEqual([[0, 10], [12, 15], [44, 44], [55, 57], [59, 59]])
         })
 
         it("should select using object", () => {
             const ranges = new Ranges([[0, 10], [12, 15]])
-            expect(ranges.select({ 44: true, 55: true, 56: true, 57: true }))
-                .toEqual([[0, 10], [12, 15], [44, 44], [55, 57]])
+            // Same as array test: adjacent numbers should merge
+            expect(ranges.select({ 44: true, 55: true, 56: true, 57: true, 59: true }))
+                .toEqual([[0, 10], [12, 15], [44, 44], [55, 57], [59, 59]])
         })
 
         it("should unselect single index", () => {
-            const ranges = new Ranges([[0, 10], [12, 15]])
-            expect(ranges.unselect(14))
-                .toEqual([[0, 10], [12, 13], [15, 15]])
+            const ranges = new Ranges([[0, 10], [11, 15]]) // 11 is adjacent to 10
+            expect(ranges.unselect(11))
+                .toEqual([[0, 10], [12, 15]])
         })
 
         it("should unselect array of indices", () => {
-            const ranges = new Ranges([[0, 10], [12, 15]])
-            expect(ranges.unselect([2, 6, 7]))
-                .toEqual([[0, 1], [3, 5], [8, 10], [12, 15]])
+            const ranges = new Ranges([[0, 10], [11, 15]]) // 11 is adjacent to 10
+            expect(ranges.unselect([2, 3, 4, 11]))
+                .toEqual([[0, 1], [5, 10], [12, 15]])
         })
     })
 }

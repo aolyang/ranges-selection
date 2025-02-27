@@ -1,12 +1,13 @@
-import { normalize } from "./normalize"
-import type { Range, RangeArray } from "../types"
+import type { Range } from "../types"
 
-export function unselect(ranges: RangeArray, indices: number | number[]): RangeArray {
+import { normalize } from "./normalize"
+
+export function unselect(ranges: Range[], indices: number | number[]): Range[] {
     const sortedIndices = Array.isArray(indices)
         ? [...indices].sort((a, b) => a - b)
         : [indices]
 
-    const result: RangeArray = []
+    const result: Range[] = []
 
     ranges.forEach(([start, end]) => {
         let currentStart = start

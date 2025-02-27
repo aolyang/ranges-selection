@@ -1,11 +1,10 @@
-type Range = [number, number]
-type RangeArray = Range[]
+import type { Range } from "../types"
 
-export function normalize(ranges: RangeArray): RangeArray {
+export function normalize(ranges: Range[]): Range[] {
     if (ranges.length === 0) return []
 
     const sorted = ranges.sort((a, b) => a[0] - b[0])
-    const result: RangeArray = [sorted[0]]
+    const result: Range[] = [sorted[0]]
 
     for (let i = 1; i < sorted.length; i++) {
         const current = sorted[i]

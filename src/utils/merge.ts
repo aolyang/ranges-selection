@@ -1,6 +1,7 @@
-import { normalize } from "./normalize"
-import type { Range, RangeArray } from "../types"
+import type { Range } from "../types"
 
-export function merge(existing: RangeArray, newRanges: RangeArray): RangeArray {
+import { normalize } from "./normalize"
+
+export function merge(existing: Range[], newRanges: Range[]): Range[] {
     return normalize([...existing, ...newRanges])
 }

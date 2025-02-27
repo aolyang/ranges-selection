@@ -1,2 +1,2 @@
 export { Ranges } from "./lib"
-export type { Range, RangeArray, IndexObject } from "./types"
+export type { Range, IndexObject } from "./types"

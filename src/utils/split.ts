@@ -1,8 +1,9 @@
-import { normalize } from "./normalize"
-import type { Range, RangeArray } from "../types"
+import type { Range } from "../types"
 
-export function split(ranges: RangeArray, splitRange: Range): RangeArray {
-    const result: RangeArray = []
+import { normalize } from "./normalize"
+
+export function split(ranges: Range[], splitRange: Range): Range[] {
+    const result: Range[] = []
 
     ranges.forEach(([start, end]) => {
         if (end < splitRange[0] || start > splitRange[1]) {

@@ -1,5 +1,6 @@
-import type { IndexObject,Range } from "./types"
+import type { IndexObject, Range } from "./types"
 
+import { include } from "./utils/include"
 import { merge } from "./utils/merge"
 import { normalize } from "./utils/normalize"
 import { select } from "./utils/select"
@@ -7,7 +8,7 @@ import { split } from "./utils/split"
 import { unselect } from "./utils/unselect"
 
 export class Ranges {
-    private ranges:Range[]
+    private ranges: Range[]
 
     /**
      * Creates a new Ranges instance with optional initial ranges
@@ -86,6 +87,20 @@ export class Ranges {
         this.ranges = unselect(this.ranges, input)
         return this.value()
     }
+
+    /**
+     * Checks if a number or range is included in the current ranges
+     * @param target - Number or range to check for inclusion
+     * @returns True if the target is included in any range
+     * @example
+     * ranges.value() // [[0, 10], [12, 15]]
+     * ranges.include(5) // true
+     * ranges.include(11) // false
+     * ranges.include([8, 13]) // true
+     */
+    include(target: number | Range): boolean {
+        return include(this.ranges, target)
+    }
 }
 
 if (import.meta.vitest) {
@@ -146,6 +161,19 @@ if (import.meta.vitest) {
             const ranges = new Ranges([[0, 10], [11, 15]]) // 11 is adjacent to 10
             expect(ranges.unselect([2, 3, 4, 11]))
                 .toEqual([[0, 1], [5, 10], [12, 15]])
+        })
+
+        it("should check inclusion", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+
+            // Check numbers
+            expect(ranges.include(5)).toBe(true)
+            expect(ranges.include(11)).toBe(false)
+
+            // Check ranges
+            expect(ranges.include([5, 8])).toBe(true)
+            expect(ranges.include([8, 13])).toBe(true)
+            expect(ranges.include([16, 20])).toBe(false)
         })
     })
 }

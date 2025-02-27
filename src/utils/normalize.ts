@@ -4,10 +4,10 @@ export function normalize(ranges: Range[]): Range[] {
     if (ranges.length === 0) return []
 
     const sorted = ranges.sort((a, b) => a[0] - b[0])
-    const result: Range[] = [sorted[0]]
+    const result: Range[] = [[...sorted[0]]]
 
     for (let i = 1; i < sorted.length; i++) {
-        const current = sorted[i]
+        const current: Range = [...sorted[i]]
         const last = result[result.length - 1]
 
         if (current[0] <= last[1] + 1) {
@@ -48,8 +48,7 @@ if (import.meta.vitest) {
         })
 
         it("should handle multiple overlapping and adjacent ranges", () => {
-            expect(normalize([[1, 3], [2, 4], [6, 8], [9, 10]]))
-                .toEqual([[1, 4], [6, 10]])  // 9 is adjacent to 8
+            expect(normalize([[1, 3], [2, 4], [6, 8], [9, 10]])).toEqual([[1, 4], [6, 10]])
         })
     })
 }

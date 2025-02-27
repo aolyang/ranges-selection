@@ -1,5 +1,6 @@
 import type { Range } from "../types"
 
+import { collect } from "./collect"
 import { normalize } from "./normalize"
 
 export function select(
@@ -11,23 +12,8 @@ export function select(
     }
 
     if (Array.isArray(input)) {
-        if (input.length === 0) return normalize(ranges)
-
-        const sorted = [...input].sort((a, b) => a - b)
-        const newRanges: Range[] = []
-        let current: Range = [sorted[0], sorted[0]]
-
-        for (let i = 1; i < sorted.length; i++) {
-            if (sorted[i] === current[1] + 1) {
-                current[1] = sorted[i]
-            } else {
-                newRanges.push([...current])
-                current = [sorted[i], sorted[i]]
-            }
-        }
-        newRanges.push(current)
-
-        return normalize([...ranges, ...newRanges])
+        if (input.length === 0) return normalize([...ranges])
+        return normalize([...ranges, ...collect(input)])
     }
 
     const indices = Object.entries(input)
@@ -66,10 +52,8 @@ if (import.meta.vitest) {
         })
 
         it("should handle object input", () => {
-            expect(select(baseRanges, { 44: true, 45: true, 46: true }))
-                .toEqual([[0, 10], [12, 15], [44, 46]])
-            expect(select(baseRanges, { 11: true, 16: true }))
-                .toEqual([[0, 16]])
+            expect(select(baseRanges, { 44: true, 45: true, 46: true })).toEqual([[0, 10], [12, 15], [44, 46]])
+            expect(select(baseRanges, { 11: true, 16: true })).toEqual([[0, 16]])
         })
 
         it("should handle empty inputs", () => {

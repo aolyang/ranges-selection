@@ -6,11 +6,7 @@ export function include(ranges: Range[], target: number | Range): boolean {
     }
 
     const [targetStart, targetEnd] = target
-    return ranges.some(([start, end]) =>
-        (start <= targetStart && targetStart <= end) ||
-        (start <= targetEnd && targetEnd <= end) ||
-        (targetStart <= start && end <= targetEnd)
-    )
+    return ranges.some(([start, end]) => start <= targetStart && targetEnd <= end)
 }
 
 if (import.meta.vitest) {
@@ -28,8 +24,10 @@ if (import.meta.vitest) {
 
         it("should check range inclusion", () => {
             expect(include(baseRanges, [5, 8])).toBe(true)
-            expect(include(baseRanges, [8, 13])).toBe(true)
+            expect(include(baseRanges, [8, 13])).toBe(false) // 11 is not included
             expect(include(baseRanges, [11, 11])).toBe(false)
+            expect(include(baseRanges, [12, 14])).toBe(true)
+            expect(include(baseRanges, [15, 16])).toBe(false) // 16 is not included
             expect(include(baseRanges, [16, 20])).toBe(false)
         })
 

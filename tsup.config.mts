@@ -1,9 +1,11 @@
 import { defineConfig } from "tsup"
 
 export default defineConfig({
-    treeshake: true,
-    entry: ["src/index.ts"],
+    entry: ["src/index.ts", "src/utils.ts"],
     define: {
         "import.meta.vitest": "false"
-    }
+    },
+    treeshake: true,
+    sourcemap: true,
+    splitting: true
 })

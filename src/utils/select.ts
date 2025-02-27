@@ -11,6 +11,8 @@ export function select(
     }
 
     if (Array.isArray(input)) {
+        if (input.length === 0) return normalize(ranges)
+
         const sorted = [...input].sort((a, b) => a - b)
         const newRanges: Range[] = []
         let current: Range = [sorted[0], sorted[0]]
@@ -29,8 +31,9 @@ export function select(
     }
 
     const indices = Object.entries(input)
-        .filter(([_, value]) => value)
+        .filter(([_, value]) => value !== undefined && value !== null && value)
         .map(([key]) => parseInt(key))
+
     return select(ranges, indices)
 }
 
@@ -39,6 +42,18 @@ if (import.meta.vitest) {
 
     describe("select function", () => {
         const baseRanges: Range[] = [[0, 10], [12, 15]]
+
+        it("should handle empty inputs", () => {
+            expect(select([], [])).toEqual([])
+            expect(select([], {})).toEqual([])
+            expect(select(baseRanges, [])).toEqual([[0, 10], [12, 15]])
+            expect(select(baseRanges, {})).toEqual([[0, 10], [12, 15]])
+        })
+
+        it("should handle undefined/null values in object", () => {
+            expect(select(baseRanges, { 44: undefined, 45: null, 46: true } as any))
+                .toEqual([[0, 10], [12, 15], [46, 46]])
+        })
 
         it("should handle single number input", () => {
             expect(select(baseRanges, 44)).toEqual([[0, 10], [12, 15], [44, 44]])

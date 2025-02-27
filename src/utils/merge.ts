@@ -18,7 +18,7 @@ if (import.meta.vitest) {
 
         it("should merge non-overlapping ranges", () => {
             expect(merge([[1, 3]], [[5, 7]])).toEqual([[1, 3], [5, 7]])
-            expect(merge([[1, 3], [7, 9]], [[5, 6]])).toEqual([[1, 3], [5, 6], [7, 9]])
+            expect(merge([[1, 3], [7, 9]], [[5, 6]])).toEqual([[1, 3], [5, 9]])
         })
 
         it("should merge overlapping ranges", () => {
@@ -28,7 +28,7 @@ if (import.meta.vitest) {
 
         it("should merge adjacent ranges", () => {
             expect(merge([[1, 3]], [[4, 6]])).toEqual([[1, 6]])
-            expect(merge([[1, 3], [7, 9]], [[4, 6]])).toEqual([[1, 6], [7, 9]])
+            expect(merge([[1, 3], [7, 9]], [[4, 6]])).toEqual([[1, 9]])
         })
     })
 }

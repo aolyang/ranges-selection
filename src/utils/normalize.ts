@@ -19,3 +19,34 @@ export function normalize(ranges: Range[]): Range[] {
 
     return result
 }
+
+if (import.meta.vitest) {
+    const { describe, it, expect } = import.meta.vitest
+
+    describe("normalize function", () => {
+        it("should handle empty array", () => {
+            expect(normalize([])).toEqual([])
+        })
+
+        it("should handle single range", () => {
+            expect(normalize([[1, 3]])).toEqual([[1, 3]])
+        })
+
+        it("should sort ranges", () => {
+            expect(normalize([[5, 7], [1, 3]])).toEqual([[1, 3], [5, 7]])
+        })
+
+        it("should merge overlapping ranges", () => {
+            expect(normalize([[1, 3], [2, 4]])).toEqual([[1, 4]])
+            expect(normalize([[1, 5], [2, 3]])).toEqual([[1, 5]])
+        })
+
+        it("should merge adjacent ranges", () => {
+            expect(normalize([[1, 2], [3, 4]])).toEqual([[1, 4]])
+        })
+
+        it("should handle multiple overlapping ranges", () => {
+            expect(normalize([[1, 3], [2, 4], [6, 8], [7, 9]])).toEqual([[1, 4], [6, 9]])
+        })
+    })
+}

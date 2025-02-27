@@ -87,3 +87,59 @@ export class Ranges {
         return this.value()
     }
 }
+
+if (import.meta.vitest) {
+    const { describe, it, expect } = import.meta.vitest
+
+    describe("Ranges class", () => {
+        it("should initialize with empty or initial ranges", () => {
+            const empty = new Ranges()
+            expect(empty.value()).toEqual([])
+
+            const initial = new Ranges([[0, 10], [12, 15]])
+            expect(initial.value()).toEqual([[0, 10], [12, 15]])
+        })
+
+        it("should merge ranges", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.merge([[16, 20], [22, 24]]))
+                .toEqual([[0, 10], [12, 15], [16, 20], [22, 24]])
+        })
+
+        it("should split ranges", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.split([9, 13]))
+                .toEqual([[0, 8], [14, 15]])
+        })
+
+        it("should select single index", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.select(44))
+                .toEqual([[0, 10], [12, 15], [44, 44]])
+        })
+
+        it("should select array of indices", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.select([44, 55, 56, 57]))
+                .toEqual([[0, 10], [12, 15], [44, 44], [55, 57]])
+        })
+
+        it("should select using object", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.select({ 44: true, 55: true, 56: true, 57: true }))
+                .toEqual([[0, 10], [12, 15], [44, 44], [55, 57]])
+        })
+
+        it("should unselect single index", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.unselect(14))
+                .toEqual([[0, 10], [12, 13], [15, 15]])
+        })
+
+        it("should unselect array of indices", () => {
+            const ranges = new Ranges([[0, 10], [12, 15]])
+            expect(ranges.unselect([2, 6, 7]))
+                .toEqual([[0, 1], [3, 5], [8, 10], [12, 15]])
+        })
+    })
+}

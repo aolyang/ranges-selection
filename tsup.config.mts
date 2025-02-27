@@ -2,7 +2,7 @@ import { defineConfig } from "tsup"
 
 export default defineConfig({
     treeshake: true,
-    entry: ["src/lib.ts"],
+    entry: ["src/index.ts"],
     define: {
         "import.meta.vitest": "false"
     }

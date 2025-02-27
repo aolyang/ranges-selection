@@ -33,3 +33,34 @@ export function select(
         .map(([key]) => parseInt(key))
     return select(ranges, indices)
 }
+
+if (import.meta.vitest) {
+    const { describe, it, expect } = import.meta.vitest
+
+    describe("select function", () => {
+        const baseRanges: Range[] = [[0, 10], [12, 15]]
+
+        it("should handle single number input", () => {
+            expect(select(baseRanges, 44)).toEqual([[0, 10], [12, 15], [44, 44]])
+            expect(select(baseRanges, 11)).toEqual([[0, 15]])
+        })
+
+        it("should handle array input", () => {
+            expect(select(baseRanges, [44, 45, 46])).toEqual([[0, 10], [12, 15], [44, 46]])
+            expect(select(baseRanges, [11, 16, 17])).toEqual([[0, 17]])
+        })
+
+        it("should handle object input", () => {
+            expect(select(baseRanges, { 44: true, 45: true, 46: true }))
+                .toEqual([[0, 10], [12, 15], [44, 46]])
+            expect(select(baseRanges, { 11: true, 16: true }))
+                .toEqual([[0, 16]])
+        })
+
+        it("should handle empty inputs", () => {
+            expect(select([], 1)).toEqual([[1, 1]])
+            expect(select([], [])).toEqual([])
+            expect(select([], {})).toEqual([])
+        })
+    })
+}

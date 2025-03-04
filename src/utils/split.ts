@@ -2,23 +2,23 @@ import type { Range } from "../types"
 
 import { normalize } from "./normalize"
 
-export function split(ranges: Range[], splitRange: Range): Range[] {
+export function split(ranges: Range[], range: Range): Range[] {
     const result: Range[] = []
 
-    ranges.forEach(([start, end]) => {
-        if (end < splitRange[0] || start > splitRange[1]) {
+    normalize(ranges).forEach(([start, end]) => {
+        if (end < range[0] || start > range[1]) {
             result.push([start, end])
         } else {
-            if (start < splitRange[0]) {
-                result.push([start, splitRange[0] - 1])
+            if (start < range[0]) {
+                result.push([start, range[0] - 1])
             }
-            if (end > splitRange[1]) {
-                result.push([splitRange[1] + 1, end])
+            if (end > range[1]) {
+                result.push([range[1] + 1, end])
             }
         }
     })
 
-    return normalize(result)
+    return result
 }
 
 if (import.meta.vitest) {
@@ -41,8 +41,8 @@ if (import.meta.vitest) {
         })
 
         it("should split multiple ranges", () => {
-            expect(split([[1, 5], [7, 10]], [3, 8]))
-                .toEqual([[1, 2], [9, 10]])
+            expect(split([[1, 5], [7, 10]], [3, 8])).toEqual([[1, 2], [9, 10]])
+            expect(split([[1, 5], [9, 16], [7, 10]], [3, 8])).toEqual([[1, 2], [9, 16]])
         })
 
         it("should handle edge cases", () => {

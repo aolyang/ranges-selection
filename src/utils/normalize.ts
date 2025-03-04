@@ -5,22 +5,18 @@ export function normalize(ranges: Range[]): Range[] {
 
     const sorted = ranges
         .map(range => [...range] as Range)
-        .sort((a, b) => a[0] - b[0])
+        .sort((prev, next) => prev[0] - next[0])
 
-    const result: Range[] = [sorted[0]]
+    return sorted.reduce((acc, current) => {
+        const last = acc[acc.length - 1]
 
-    for (let i = 1; i < sorted.length; i++) {
-        const current: Range =  sorted[i]
-        const last = result[result.length - 1]
-
-        if (current[0] <= last[1] + 1) {
+        if (current[0] <= last[1] + 1)
             last[1] = Math.max(last[1], current[1])
-        } else {
-            result.push(current)
-        }
-    }
+        else
+            acc.push(current)
 
-    return result
+        return acc
+    }, [sorted.shift()!])
 }
 
 if (import.meta.vitest) {

@@ -52,13 +52,15 @@ export class Ranges {
      * @param input - Single index, array of indices, or object with index-boolean pairs
      * @returns Updated ranges after selection
      * @example
-     * // Single index
+     * ranges.value() // [[0, 10], [12, 15]]
+     *
+     * // or: Single index
      * ranges.select(44) // [[0, 10], [12, 15], [44, 44]]
      *
-     * // Array of indices
+     * // or: Array of indices
      * ranges.select([44, 55, 56, 57]) // [[0, 10], [12, 15], [44, 44], [55, 57]]
      *
-     * // Object with index-boolean pairs
+     * // or: Object with index-boolean pairs
      * ranges.select({ 44: true, 55: true }) // [[0, 10], [12, 15], [44, 44], [55, 55]]
      */
     select(input: number | number[] | IndexObject): Range[] {
@@ -103,7 +105,8 @@ export class Ranges {
      * ranges.value() // [[0, 10], [12, 15]]
      * ranges.include(5) // true
      * ranges.include(11) // false
-     * ranges.include([8, 13]) // true
+     * ranges.include([8, 10]) // true
+     * ranges.include([8, 13]) // false, 11 is not included
      */
     include(target: number | Range): boolean {
         return Utils.include(this.ranges, target)
